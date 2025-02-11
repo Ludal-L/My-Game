@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钢琴块游戏 - 四列（封面背景音乐版）</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72, #2a5298); /* 初始渐变背景 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+        }
+        /* 封面样式 */
+        #cover {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            overflow: hidden;
+        }
+        #coverBackground {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 确保背景图覆盖整个封面 */
+            z-index: -1;
+        }
+        #cover h1 {
+            font-size: 60px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease-in-out; /* 标题淡入动画 */
+        }
+        #startButton {
+            padding: 15px 30px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #ff6f61;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 111, 97, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: pulse 2s infinite; /* 按钮脉冲动画 */
+        }
+        #startButton:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(255, 111, 97, 0.8);
+        }
+        /* 标题淡入动画 */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* 按钮脉冲动画 */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        /* 游戏界面样式 */
+        #gameContainer {
+            display: none; /* 初始隐藏游戏界面 */
+        }
+        #score {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ffeb3b; /* 计分板颜色 */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 文字阴影 */
+        }
+        #message {
+            font-size: 40px;
+            font-weight: bold;
+            color: #ffeb3b;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 20px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        #game {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+            border-radius: 15px; /* 圆角边框 */
+            overflow: hidden;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+        }
+        .column {
+            position: relative;
+            width: 22%; /* 列宽度 */
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1); /* 半透明列背景 */
+            border-radius: 10px; /* 列圆角 */
+        }
+        .block {
+            position: absolute;
+            width: 100%;
+            height: 100px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: top 0.1s linear;
+            border-radius: 10px; /* 方块圆角 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* 方块阴影 */
+        }
+        .block.active {
+            background-color: #ffeb3b; /* 激活方块颜色 */
+            box-shadow: 0 4px 10px rgba(255, 235, 59, 0.5); /* 激活方块阴影 */
+        }
+        /* 粒子效果 */
+        #particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            animation: float 5s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        /* 移动端适配 */
+        @media (max-width: 600px) {
+            #cover h1 {
+                font-size: 40px; /* 移动端标题字体缩小 */
+            }
+            #startButton {
+                font-size: 20px; /* 移动端按钮字体缩小 */
+                padding: 10px 20px; /* 移动端按钮缩小 */
+            }
+            #game {
+                width: 90%; /* 移动端游戏区域宽度调整 */
+                height: 80vh; /* 移动端游戏区域高度调整 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 封面 -->
+    <div id="cover">
+        <!-- 动态背景图 -->
+        <img id="coverBackground" src="https://1318328187.vod2.myqcloud.com/3dcdd3b3vodsh1318328187/970784231397757904335053232/NYcyDZwHHA0A.gif" alt="封面背景">
+        <h1>钢琴块游戏</h1>
+        <button id="startButton">开始游戏</button>
+    </div>
+
+    <!-- 游戏界面 -->
+    <div id="gameContainer">
+        <div id="score">得分: 0</div>
+        <div id="message">鲁总看好你</div>
+        <div id="game">
+            <div class="column"></div>
+            <div class="column"></div>
+            <div class="column"></div>
+            <div class="column"></div>
+        </div>
+    </div>
+
+    <!-- 粒子效果容器 -->
+    <div id="particles"></div>
+
+    <!-- 封面背景音乐 -->
+    <audio id="coverBGM" loop>
+        <source src="https://1318328187.vod2.myqcloud.com/3dcdd3b3vodsh1318328187/78522bcf1397757904331981175/LeuAi7i3ETIA.mp3" type="audio/mpeg">
+        您的浏览器不支持音频播放。
+    </audio>
+
+    <!-- 游戏背景音乐 -->
+    <audio id="gameBGM" loop>
+        <source src="https://1318328187.vod2.myqcloud.com/3dcdd3b3vodsh1318328187/b66016e71397757904325548003/lKlUeAWpOsMA.mp3" type="audio/mpeg">
+        您的浏览器不支持音频播放。
+    </audio>
+
+    <!-- 点击音效 -->
+    <audio id="clickSound">
+        <source src="https://1318328187.vod2.myqcloud.com/3dcdd3b3vodsh1318328187/499adcee1397757904327283822/q3mrjh5sJrgA.mp3" type="audio/mpeg">
+        您的浏览器不支持音频播放。
+    </audio>
+
+    <!-- 游戏失败音效 -->
+    <audio id="failSound">
+        <source src="https://1318328187.vod2.myqcloud.com/3dcdd3b3vodsh1318328187/84d3ac491397757904338337032/SC4zPxFaA8oA.mp3" type="audio/mpeg">
+        您的浏览器不支持音频播放。
+    </audio>
+
+    <script>
+        const cover = document.getElementById('cover');
+        const startButton = document.getElementById('startButton');
+        const gameContainer = document.getElementById('gameContainer');
+        const columns = document.querySelectorAll('.column');
+        const scoreDisplay = document.getElementById('score');
+        const messageDisplay = document.getElementById('message');
+        const coverBGM = document.getElementById('coverBGM');
+        const gameBGM = document.getElementById('gameBGM');
+        const clickSound = document.getElementById('clickSound');
+        const failSound = document.getElementById('failSound');
+        const particlesContainer = document.getElementById('particles');
+        const blockHeight = 100;
+        const gameHeight = 600;
+        let speed = 2; // 初始速度设置为2
+        let score = 0;
+        let time = 0; // 计时器
+
+        // 播放封面背景音乐
+        function playCoverBGM() {
+            coverBGM.play().catch(() => {
+                // 如果自动播放失败，提示用户点击页面以播放音乐
+                alert("点击页面以播放封面背景音乐！");
+                document.body.addEventListener('click', () => {
+                    coverBGM.play();
+                }, { once: true });
+            });
+        }
+
+        // 播放游戏背景音乐
+        function playGameBGM() {
+            coverBGM.pause(); // 停止封面背景音乐
+            gameBGM.play().catch(() => {
+                // 如果自动播放失败，提示用户点击页面以播放音乐
+                alert("点击页面以播放游戏背景音乐！");
+                document.body.addEventListener('click', () => {
+                    gameBGM.play();
+                }, { once: true });
+            });
+        }
+
+        // 播放点击音效
+        function playClickSound() {
+            clickSound.currentTime = 0; // 重置音效播放时间
+            clickSound.play();
+        }
+
+        // 播放游戏失败音效
+        function playFailSound() {
+            failSound.currentTime = 0; // 重置音效播放时间
+            failSound.play();
+        }
+
+        // 更新速度的函数
+        function updateSpeed() {
+            time++;
+            if (time % 10 === 0) { // 每10秒加速一次
+                speed += 0.5; // 每次加速0.5
+                console.log(`速度加快！当前速度：${speed}`);
+            }
+        }
+
+        // 更新得分的函数
+        function updateScore() {
+            score += 10; // 每次增加10分
+            scoreDisplay.textContent = `得分: ${score}`;
+
+            // 当分数超过200时，显示闪烁提示
+            if (score > 200) {
+                showMessage();
+            }
+        }
+
+        // 显示闪烁提示的函数
+        function showMessage() {
+            messageDisplay.style.opacity = 1; // 显示提示
+            let blinkCount = 0;
+            const blinkInterval = setInterval(() => {
+                blinkCount++;
+                messageDisplay.style.opacity = messageDisplay.style.opacity === '1' ? '0' : '1'; // 闪烁效果
+                if (blinkCount >= 6) { // 闪烁3秒（0.5秒一次，共6次）
+                    clearInterval(blinkInterval);
+                    messageDisplay.style.opacity = 0; // 隐藏提示
+                }
+            }, 500); // 每0.5秒闪烁一次
+        }
+
+        // 创建方块的函数
+        function createBlock() {
+            const randomColumn = columns[Math.floor(Math.random() * 4)]; // 随机选择一个列
+            const block = document.createElement('div');
+            block.classList.add('block');
+            block.style.top = '-100px';
+            randomColumn.appendChild(block);
+
+            let top = -blockHeight;
+            const interval = setInterval(() => {
+                top += speed;
+                block.style.top = `${top}px`;
+
+                if (top >= gameHeight) {
+                    clearInterval(interval);
+                    randomColumn.removeChild(block);
+                    playFailSound(); // 播放游戏失败音效
+                    setTimeout(() => {
+                        alert('拉胯'); // 游戏失败提示
+                        window.location.reload();
+                    }, 500); // 延迟0.5秒显示提示
+                }
+            }, 10);
+
+            block.addEventListener('click', () => {
+                if (block.classList.contains('active')) {
+                    updateScore(); // 更新得分
+                    playClickSound(); // 播放点击音效
+                    block.style.backgroundColor = '#4caf50'; // 点击后变为绿色
+                    block.style.boxShadow = '0 4px 10px rgba(76, 175, 80, 0.5)'; // 点击后阴影效果
+                    setTimeout(() => {
+                        randomColumn.removeChild(block);
+                    }, 100);
+                }
+            });
+
+            setTimeout(() => {
+                block.classList.add('active');
+            }, Math.random() * 2000 + 1000);
+        }
+
+        // 开始游戏
+        startButton.addEventListener('click', () => {
+            cover.style.display = 'none'; // 隐藏封面
+            gameContainer.style.display = 'block'; // 显示游戏界面
+            playGameBGM(); // 切换到游戏背景音乐
+            setInterval(createBlock, 1000); // 每1秒生成一个方块
+            setInterval(updateSpeed, 1000); // 每1秒更新一次速度
+        });
+
+        // 游戏开始时播放封面背景音乐
+        playCoverBGM();
+    </script>
+</body>
+</html>
