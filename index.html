@@ -381,7 +381,7 @@
             // 每10秒增加下落速度
             const currentTime = Date.now();
             if (currentTime - lastSpeedIncreaseTime > 10000) { // 10秒
-                speed += 0.5;
+                speed += 1;
                 lastSpeedIncreaseTime = currentTime;
             }
 
