@@ -188,8 +188,8 @@
         const columns = 4; // 列数
         const blockWidth = canvas.width / columns; // 每个钢琴块的宽度
         const blockHeight = 80; // 钢琴块的高度
-        const blockGap = 20; // 钢琴块之间的垂直间距
-        let speed = 6; // 初始下落速度
+        const blockGap = 10; // 钢琴块之间的垂直间距
+        let speed = 6; // 初始下落速度（修改为6）
         let score = 0; // 得分
         let gameOver = false; // 游戏是否结束
         let lastSpeedIncreaseTime = 0; // 记录上次速度增加的时间
@@ -353,7 +353,7 @@
             blocks = [];
             particles = [];
             score = 0;
-            speed = 2;
+            speed = 6; // 重置为初始速度
             gameOver = false;
             lastSpeedIncreaseTime = 0;
             hideGameOverMenu();
@@ -381,7 +381,7 @@
             // 每10秒增加下落速度
             const currentTime = Date.now();
             if (currentTime - lastSpeedIncreaseTime > 10000) { // 10秒
-                speed += 1;
+                speed += 0.5;
                 lastSpeedIncreaseTime = currentTime;
             }
 
