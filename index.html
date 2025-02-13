@@ -189,7 +189,7 @@
         const blockWidth = canvas.width / columns; // 每个钢琴块的宽度
         const blockHeight = 80; // 钢琴块的高度
         const blockGap = 20; // 钢琴块之间的垂直间距
-        let speed = 3; // 初始下落速度
+        let speed = 2; // 初始下落速度
         let score = 0; // 得分
         let gameOver = false; // 游戏是否结束
         let lastSpeedIncreaseTime = 0; // 记录上次速度增加的时间
@@ -381,7 +381,7 @@
             // 每10秒增加下落速度
             const currentTime = Date.now();
             if (currentTime - lastSpeedIncreaseTime > 10000) { // 10秒
-                speed += 1;
+                speed += 0.5;
                 lastSpeedIncreaseTime = currentTime;
             }
 
@@ -443,6 +443,7 @@
             cover.style.display = 'none'; // 隐藏封面
             canvas.style.display = 'block'; // 显示游戏画布
             coverMusic.pause(); // 停止封面背景音乐
+            coverMusic.currentTime = 0; // 重置封面音乐
             gameMusic.play(); // 播放游戏背景音乐
             resetGame();
             gameLoop(); // 启动游戏主循环
@@ -453,6 +454,7 @@
             cover.style.display = 'block'; // 显示封面
             canvas.style.display = 'none'; // 隐藏游戏画布
             gameMusic.pause(); // 停止游戏背景音乐
+            gameMusic.currentTime = 0; // 重置游戏音乐
             coverMusic.play(); // 播放封面背景音乐
             resetGame();
         });
@@ -475,6 +477,7 @@
             cover.style.display = 'block'; // 显示封面
             canvas.style.display = 'none'; // 隐藏游戏画布
             gameMusic.pause(); // 停止游戏背景音乐
+            gameMusic.currentTime = 0; // 重置游戏音乐
             coverMusic.play(); // 播放封面背景音乐
             resetGame();
         });
